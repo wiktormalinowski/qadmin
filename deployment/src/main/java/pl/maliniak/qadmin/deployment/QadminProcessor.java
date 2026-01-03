@@ -19,19 +19,4 @@ class QadminProcessor {
     void registerResource(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
         additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(AdminResource.class));
     }
-
-    @BuildStep
-    void devService(BuildProducer<RunTimeConfigurationDefaultBuildItem> config) {
-        // Odpowiednik quarkus.quinoa.ui-dir w properties
-        config.produce(new RunTimeConfigurationDefaultBuildItem(
-                "quarkus.quinoa.ui-dir", "../runtime/src/main/webui"));
-
-        // Odpowiednik quarkus.quinoa.ui-root-path
-        config.produce(new RunTimeConfigurationDefaultBuildItem(
-                "quarkus.quinoa.ui-root-path", "qadmin-ui"));
-
-        // Automatyczna instalacja node/npm
-        config.produce(new RunTimeConfigurationDefaultBuildItem(
-                "quarkus.quinoa.package-manager-install", "true"));
-    }
 }

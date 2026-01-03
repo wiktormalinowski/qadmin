@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:qadmin": "ng build --configuration production --base-href /qadmin/ --deploy-url /qadmin/"
   },
   "prettier": {
     "printWidth": 100,
