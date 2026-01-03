@@ -1,0 +1,6 @@
+quarkus.quinoa.ui-dir=elo
+quarkus.quinoa.package-manager-install=true
+# Przekieruj UI na konkretny endpoint
+quarkus.quinoa.path=qadmin-ui
+quarkus.quinoa.dev-server.port=8092
+quarkus.quinoa.package-manager-install=true
