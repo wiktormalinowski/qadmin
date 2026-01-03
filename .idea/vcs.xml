@@ -2,7 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deployment/src/main" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/runtime/src/main/webui" vcs="Git" />
   </component>
 </project>
