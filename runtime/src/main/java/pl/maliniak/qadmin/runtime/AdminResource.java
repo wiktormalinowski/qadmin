@@ -58,4 +58,28 @@ public class AdminResource {
                 )
                 .orElse(Collections.emptyList());
     }
+
+    @GET
+    @Path("/data/{entityName}")
+    public List<Object> getData(@PathParam("entityName") String entityName) {
+        if (!iEm.isResolvable()) {
+            return Collections.emptyList();
+        }
+
+        return iEm.get()
+                .getMetamodel()
+                .getEntities()
+                .stream()
+                .filter(e ->
+                        e.getName().equals(entityName) ||                       // @Entity(name)
+                                e.getJavaType().getSimpleName().equals(entityName)      // nazwa klasy
+                )
+                .findFirst()
+                .map(entityType ->
+                        iEm.get()
+                                .createQuery("FROM " + entityType.getName(), Object.class)
+                                .getResultList()
+                )
+                .orElse(Collections.emptyList());
+    }
 }

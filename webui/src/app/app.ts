@@ -1,63 +1,79 @@
-import {Component, OnInit} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {forkJoin, map, Observable, of, switchMap} from 'rxjs';
-import {AsyncPipe, JsonPipe} from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {AsyncPipe, JsonPipe, KeyValuePipe} from '@angular/common';
+import { forkJoin, map, Observable, of, switchMap, catchError, shareReplay } from 'rxjs';
+
+// Typed interface for better maintainability and tooling support
+interface EntityViewModel {
+  name: string;
+  metadata: unknown;
+  data: unknown;
+}
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [
     AsyncPipe,
-    JsonPipe
+    JsonPipe,
+    KeyValuePipe
   ],
-  template: `
-    <h1>Available entities:</h1>
-    <ul>
-      @for (entity of (entities$ | async); track $index) {
-        <li>
-          <strong>{{ entity }}</strong>
-
-          @if (entitiesMetadata$ | async; as meta) {
-            <pre>{{ meta[entity] | json }}</pre>
-          } @else {
-            <p>Loading metadata...</p>
-          }
-        </li>
-      } @empty {
-        <li>There are no entities!</li>
-      }
-    </ul>
-  `
+  templateUrl: 'app.html',
+  styleUrls: ['app.css']
 })
-export class App implements OnInit {
-  entities$: Observable<string[]> | undefined;
-  entitiesMetadata$: Observable<Record<string, unknown>> | undefined;
+export class App {
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {
+  // Define the ViewModel stream.
+  // We shareReplay(1) to prevent multiple HTTP calls if the template subscribes multiple times (or if used in multiple places).
+  readonly vm$: Observable<EntityViewModel[]> = this.http.get<string[]>('/q/qadmin/api/entities').pipe(
+    switchMap(entityNames => {
+      if (!entityNames || entityNames.length === 0) {
+        return of([]);
+      }
+
+      // Create an array of Observables, one for each entity
+      const batchRequests = entityNames.map(name => this.fetchEntityDetails(name));
+
+      // Execute all requests in parallel
+      return forkJoin(batchRequests);
+    }),
+    catchError(err => {
+      console.error('Critical failure loading entities', err);
+      return of([]); // Return empty list on global failure
+    }),
+    shareReplay(1)
+  );
+
+  /**
+   * Fetches both Metadata and Data for a specific entity in parallel.
+   * Includes error isolation so one failing entity doesn't break the whole list.
+   */
+  private fetchEntityDetails(name: string): Observable<EntityViewModel> {
+    const encodedName = encodeURIComponent(name);
+
+    return forkJoin({
+      metadata: this.http.get<unknown>(`/q/qadmin/api/entityMetadata/${encodedName}`).pipe(
+        catchError(err => of({ error: 'Metadata unavailable' }))
+      ),
+      data: this.http.get<unknown>(`/q/qadmin/api/data/${encodedName}`).pipe(
+        catchError(err => of([]))
+      )
+    }).pipe(
+      map(results => ({
+        name,
+        metadata: results.metadata,
+        data: results.data
+      }))
+    );
   }
 
-  ngOnInit() {
-    this.entities$ = this.http.get<string[]>('/q/qadmin/api/entities')
-    this.entitiesMetadata$ = this.entities$.pipe(
-      switchMap(entities => {
-        if (!entities || entities.length === 0) {
-          return of({} as Record<string, unknown>);
-        }
+  // Helper for template logic
+  hasData(data: unknown): boolean {
+    return Array.isArray(data) && data.length > 0;
+  }
 
-        const requests = entities.map(entity =>
-          this.http
-            .get<unknown>(`/q/qadmin/api/entityMetadata/${encodeURIComponent(entity)}`)
-            .pipe(map(res => ({ entity, res })))
-        );
-
-        return forkJoin(requests).pipe(
-          map(results =>
-            results.reduce((acc, { entity, res }) => {
-              acc[entity] = res;
-              return acc;
-            }, {} as Record<string, unknown>)
-          )
-        );
-      })
-    );
+  getCount(data: unknown): number {
+    return Array.isArray(data) ? data.length : 0;
   }
 }

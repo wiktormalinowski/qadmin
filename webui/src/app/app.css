@@ -1,0 +1,135 @@
+/* --- Global Layout --- */
+:host {
+  display: block;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #f4f6f8;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* --- Card Container --- */
+.entity-card {
+  background: white;
+  border: 1px solid #dfe2e5;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  overflow: hidden; /* Contains the table scroll */
+}
+
+/* --- Header & Badge --- */
+header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+}
+
+header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #2c3e50;
+}
+
+.badge {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* --- Metadata Section --- */
+.metadata-section {
+  background: #fcfcfc;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.metadata-section summary {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  color: #666;
+  user-select: none;
+}
+
+.metadata-section summary:hover {
+  color: #333;
+}
+
+.metadata-section pre {
+  margin: 0;
+  padding: 1rem 1.5rem;
+  background: #2d2d2d;
+  color: #eee;
+  overflow-x: auto;
+  font-size: 0.8rem;
+}
+
+/* --- Table Styling --- */
+.table-container {
+  overflow-x: auto;
+  max-height: 500px; /* Vertical scroll for long lists */
+  position: relative;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+th, td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+/* Sticky Header */
+th {
+  background: #f8f9fa;
+  color: #444;
+  font-weight: 600;
+  text-transform: capitalize;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 0 #ddd;
+}
+
+/* Row Styling */
+tr:hover td {
+  background-color: #f1f8ff;
+}
+
+td.index-col, th.index-col {
+  width: 50px;
+  text-align: center;
+  color: #999;
+  background-color: #fdfdfd;
+  border-right: 1px solid #eee;
+}
+
+/* --- Utilities --- */
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+.loading {
+  font-size: 1.2rem;
+  color: #666;
+  text-align: center;
+  margin-top: 4rem;
+}
