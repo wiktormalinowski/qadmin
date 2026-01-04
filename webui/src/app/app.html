@@ -3,49 +3,7 @@
 
   @if (vm$ | async; as entities) {
     @for (entity of entities; track entity.name) {
-
-      <section class="entity-card">
-        <header>
-          <h2>{{ entity.name }}</h2>
-          <span class="badge">{{ getCount(entity.data) }} records</span>
-        </header>
-
-        <details class="metadata-section">
-          <summary>View Metadata</summary>
-          <pre>{{ entity.metadata | json }}</pre>
-        </details>
-
-        <div class="table-container">
-          @if (hasData(entity.data)) {
-            @let rows = $any(entity.data);
-            @let firstRow = rows[0];
-
-            <table>
-              <thead>
-              <tr>
-                <th class="index-col">#</th>
-                @for (item of firstRow | keyvalue; track item.key) {
-                  <th>{{ item.key }}</th>
-                }
-              </tr>
-              </thead>
-              <tbody>
-                @for (row of rows; track $index) {
-                  <tr>
-                    <td class="index-col">{{ $index + 1 }}</td>
-                    @for (cell of row | keyvalue; track cell.key) {
-                      <td [title]="cell.value">{{ cell.value }}</td>
-                    }
-                  </tr>
-                }
-              </tbody>
-            </table>
-          } @else {
-            <div class="empty-state">No data available.</div>
-          }
-        </div>
-      </section>
-
+      <app-entity-card [entity]="entity" />
     } @empty {
       <div class="empty-dashboard">No entities found.</div>
     }

@@ -1,0 +1,13 @@
+<section class="entity-card">
+  <header>
+    <h2>{{ entity.name }}</h2>
+    <span class="badge">{{ recordCount }} records</span>
+  </header>
+
+  <details class="metadata-section">
+    <summary>View Metadata</summary>
+    <pre>{{ entity.metadata | json }}</pre>
+  </details>
+
+  <app-dynamic-table [data]="entity.data" />
+</section>

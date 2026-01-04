@@ -1,0 +1,48 @@
+.table-container {
+  overflow-x: auto;
+  max-height: 500px;
+  position: relative;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+th, td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  background: #f8f9fa;
+  color: #444;
+  font-weight: 600;
+  text-transform: capitalize;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 0 #ddd;
+}
+
+tr:hover td {
+  background-color: #f1f8ff;
+}
+
+td.index-col, th.index-col {
+  width: 50px;
+  text-align: center;
+  color: #999;
+  background-color: #fdfdfd;
+  border-right: 1px solid #eee;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
