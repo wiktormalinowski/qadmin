@@ -6,6 +6,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
@@ -30,5 +31,31 @@ public class AdminResource {
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    @GET
+    @Path("/entityMetadata/{entityName}")
+    public List<String> getEntityMetadata(@PathParam("entityName") String entityName) {
+        if (!iEm.isResolvable()) {
+            return Collections.emptyList();
+        }
+
+        return iEm.get()
+                .getMetamodel()
+                .getEntities()
+                .stream()
+                .filter(e ->
+                        e.getName().equals(entityName) ||                       // @Entity(name)
+                                e.getJavaType().getSimpleName().equals(entityName)      // nazwa klasy
+                )
+                .findFirst()
+                .map(entityType ->
+                        entityType.getAttributes().stream()
+                                .map(attr ->
+                                        attr.getName() + " : " + attr.getJavaType().getSimpleName()
+                                )
+                                .collect(Collectors.toList())
+                )
+                .orElse(Collections.emptyList());
     }
 }

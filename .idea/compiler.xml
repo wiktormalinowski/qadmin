@@ -18,17 +18,6 @@
           <entry name="$MAVEN_REPOSITORY$/org/yaml/snakeyaml/2.5/snakeyaml-2.5.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/module/jackson-module-parameter-names/2.20.1/jackson-module-parameter-names-2.20.1.jar" />
           <entry name="$MAVEN_REPOSITORY$/io/quarkus/quarkus-bootstrap-app-model/3.30.5/quarkus-bootstrap-app-model-3.30.5.jar" />
-          <entry name="$MAVEN_REPOSITORY$/io/quarkus/quarkus-extension-processor/3.30.5/quarkus-extension-processor-3.30.5.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/jboss/jdeparser/jdeparser/2.0.3.Final/jdeparser-2.0.3.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/jsoup/jsoup/1.15.3/jsoup-1.15.3.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.27.1/javaparser-core-3.27.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.20.1/jackson-databind-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.20/jackson-annotations-2.20.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.20.1/jackson-core-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.20.1/jackson-dataformat-yaml-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/yaml/snakeyaml/2.5/snakeyaml-2.5.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/module/jackson-module-parameter-names/2.20.1/jackson-module-parameter-names-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/io/quarkus/quarkus-bootstrap-app-model/3.30.5/quarkus-bootstrap-app-model-3.30.5.jar" />
         </processorPath>
         <module name="qadmin" />
       </profile>
@@ -37,17 +26,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/io/quarkus/quarkus-extension-processor/3.30.5/quarkus-extension-processor-3.30.5.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/jboss/jdeparser/jdeparser/2.0.3.Final/jdeparser-2.0.3.Final.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/jsoup/jsoup/1.15.3/jsoup-1.15.3.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/github/javaparser/javaparser-core/3.27.1/javaparser-core-3.27.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.20.1/jackson-databind-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.20/jackson-annotations-2.20.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.20.1/jackson-core-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.20.1/jackson-dataformat-yaml-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/org/yaml/snakeyaml/2.4/snakeyaml-2.4.jar" />
-          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/module/jackson-module-parameter-names/2.20.1/jackson-module-parameter-names-2.20.1.jar" />
-          <entry name="$MAVEN_REPOSITORY$/io/quarkus/quarkus-bootstrap-app-model/3.30.5/quarkus-bootstrap-app-model-3.30.5.jar" />
           <entry name="$MAVEN_REPOSITORY$/io/quarkus/quarkus-extension-processor/3.30.5/quarkus-extension-processor-3.30.5.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/jboss/jdeparser/jdeparser/2.0.3.Final/jdeparser-2.0.3.Final.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/jsoup/jsoup/1.15.3/jsoup-1.15.3.jar" />
