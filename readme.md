@@ -5,7 +5,8 @@ enabling entity data management through an Angular-based graphical user interfac
 
 ## Key features
 - **Automatic Entity Detection**: Seamlessly scans and identifies JPA entities within your application.
-- **Graphical User Interface**: Provides an Angular-based UI for easy data management.
+- **Graphical User Interface**: Provides an Angular-based UI for data display.
+- **CRUD Operations**: (Planned) Modify entities without writing dedicated REST endpoints.
 - **Natural Language Querying**: (Planned) Enables users to query and manipulate entity data using natural language, powered by AI integration.
 
 ## Usage
