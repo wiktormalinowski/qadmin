@@ -23,6 +23,10 @@ export class EntityService {
     shareReplay(1)
   );
 
+  public getEntityFromPrompt(name: string): Observable<EntityViewModel> {
+    return this.http.post<EntityViewModel>('/q/qadmin/api/ai/listWithMetadata', {prompt: name});
+  }
+
   /**
    * Pobiera metadane i dane dla konkretnej encji w sposób izolowany (błąd nie przerywa całości).
    */

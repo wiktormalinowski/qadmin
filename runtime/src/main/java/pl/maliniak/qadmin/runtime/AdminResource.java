@@ -9,16 +9,10 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.EntityType;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Path("/q/qadmin/api")
@@ -30,6 +24,9 @@ public class AdminResource {
 
     @Inject
     ExclusionRegistry registry;
+
+    @Inject
+    QAdminSupport support;
 
     /**
      * Returns all included entity names.
@@ -54,6 +51,20 @@ public class AdminResource {
         return entityType.getAttributes().stream()
                 .map(attr -> attr.getName() + " : " + attr.getJavaType().getSimpleName())
                 .collect(Collectors.toList());
+    }
+
+    @POST
+    @Path("/ai/listWithMetadata")
+    public Map<String, Object> getListWithMetadata(PromptRequest promptRequest) {
+        String entityName = support.getEntityName(promptRequest.prompt(), getEntities().toString()).trim();
+        List<Object> data = getData(entityName);
+        List<String > metadata = getEntityMetadata(entityName);
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", entityName);
+        map.put("data", data);
+        map.put("metadata", metadata);
+        return map;
+
     }
 
     /**

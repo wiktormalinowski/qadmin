@@ -1,13 +1,24 @@
 <div class="container">
   <h1>Data Dashboard</h1>
 
-  @if (vm$ | async; as entities) {
-    @for (entity of entities; track entity.name) {
+<!--  @if (vm$ | async; as entities) {-->
+<!--    @for (entity of entities; track entity.name) {-->
+<!--      <app-entity-card [entity]="entity" />-->
+<!--    } @empty {-->
+<!--      <div class="empty-dashboard">No entities found.</div>-->
+<!--    }-->
+<!--  } @else {-->
+<!--    <div class="loading">Loading system data...</div>-->
+<!--  }-->
+
+  <!-- Prompt input and button -->
+  <input #promptInput type="text" placeholder="Enter prompt..." />
+  <button (click)="entityFromPrompt$ = service.getEntityFromPrompt(promptInput.value)">Get Entity</button>
+
+  <!-- Display entity from prompt if available -->
+  @if (entityFromPrompt$; as entityObs) {
+    @if (entityObs | async; as entity) {
       <app-entity-card [entity]="entity" />
-    } @empty {
-      <div class="empty-dashboard">No entities found.</div>
     }
-  } @else {
-    <div class="loading">Loading system data...</div>
   }
 </div>

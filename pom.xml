@@ -20,6 +20,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.version>3.30.5</quarkus.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <quarkus-langchain4j.version>1.6.0.CR2</quarkus-langchain4j.version>
     </properties>
 
     <dependencyManagement>
@@ -31,6 +32,18 @@
                 <version>${quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.quarkiverse.langchain4j</groupId>
+                <artifactId>quarkus-langchain4j-openai</artifactId>
+                <version>${quarkus-langchain4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.quarkiverse.langchain4j</groupId>
+                <artifactId>quarkus-langchain4j-openai-deployment</artifactId>
+                <version>${quarkus-langchain4j.version}</version>
             </dependency>
 
         </dependencies>

@@ -33,6 +33,11 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-deployment</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.langchain4j</groupId>
+            <artifactId>quarkus-langchain4j-openai-deployment</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

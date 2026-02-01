@@ -29,6 +29,12 @@
             <artifactId>quarkus-hibernate-orm</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.quarkiverse.langchain4j</groupId>
+            <artifactId>quarkus-langchain4j-openai</artifactId>
+        </dependency>
+
+
     </dependencies>
 
     <build>
