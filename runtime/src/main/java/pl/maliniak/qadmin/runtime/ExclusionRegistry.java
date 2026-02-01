@@ -9,8 +9,20 @@ public class ExclusionRegistry {
         this.excludedKeys = excludedKeys;
     }
 
-    public boolean isExcluded(String className, String fieldName) {
-        return excludedKeys.contains(className) ||
-                excludedKeys.contains(className + "." + fieldName);
+    /**
+     * Returns true if the class and field are NOT excluded.
+     */
+    public boolean isIncluded(String className, String fieldName) {
+        if (excludedKeys.contains(className)) {
+            return false;
+        }
+        return fieldName == null || fieldName.isEmpty() || !excludedKeys.contains(className + "." + fieldName);
+    }
+
+    /**
+     * Returns true if the class is NOT excluded.
+     */
+    public boolean isIncluded(String className) {
+        return isIncluded(className, null);
     }
 }

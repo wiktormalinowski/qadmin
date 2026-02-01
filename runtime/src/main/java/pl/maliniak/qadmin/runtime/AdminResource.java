@@ -31,101 +31,81 @@ public class AdminResource {
     @Inject
     ExclusionRegistry registry;
 
+    /**
+     * Returns all included entity names.
+     */
     @GET
     @Path("/entities")
     public List<String> getEntities() {
-        if (iEm.isResolvable()) {
-            return iEm.get().getMetamodel().getEntities().stream()
-                    .filter(e -> {
-                        String fullClassName = e.getJavaType().getName();
-                        return !registry.isExcluded(fullClassName, "");
-                    })
-                    .map(EntityType::getName)
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+        if (!iEm.isResolvable()) return Collections.emptyList();
+        return getIncludedEntities().stream()
+                .map(EntityType::getName)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Returns metadata for a single included entity.
+     */
     @GET
     @Path("/entityMetadata/{entityName}")
     public List<String> getEntityMetadata(@PathParam("entityName") String entityName) {
-        if (!iEm.isResolvable()) {
-            return Collections.emptyList();
-        }
-
-        return iEm.get()
-                .getMetamodel()
-                .getEntities()
-                .stream()
-                .filter(e ->
-                        (e.getName().equals(entityName) ||
-                                e.getJavaType().getSimpleName().equals(entityName)) && !registry.isExcluded(entityName, null)   // nazwa klasy
-                )
-                .findFirst()
-                .map(entityType ->
-                        entityType.getAttributes().stream()
-                                .map(attr ->
-                                        attr.getName() + " : " + attr.getJavaType().getSimpleName()
-                                )
-                                .collect(Collectors.toList())
-                )
-                .orElse(Collections.emptyList());
+        EntityType<?> entityType = findIncludedEntity(entityName);
+        if (entityType == null) return Collections.emptyList();
+        return entityType.getAttributes().stream()
+                .map(attr -> attr.getName() + " : " + attr.getJavaType().getSimpleName())
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Returns data for a single included entity.
+     */
     @GET
     @Path("/data/{entityName}")
     public List<Object> getData(@PathParam("entityName") String entityName) {
-        if (!iEm.isResolvable()) {
-            return Collections.emptyList();
-        }
-
+        EntityType<?> entityType = findIncludedEntity(entityName);
+        if (entityType == null) return Collections.emptyList();
         var em = iEm.get();
+        Class<?> clazz = entityType.getJavaType();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Tuple> query = cb.createTupleQuery();
+        Root<?> root = query.from(clazz);
 
-        return em.getMetamodel()
-                .getEntities()
+        List<Selection<?>> selections = entityType.getSingularAttributes().stream()
+                .filter(attr -> registry.isIncluded(clazz.getName(), attr.getName()))
+                .map(attr -> root.get(attr.getName()).alias(attr.getName()))
+                .collect(Collectors.toList());
+
+        if (selections.isEmpty()) return Collections.emptyList();
+
+        query.multiselect(selections);
+
+        return em.createQuery(query)
+                .getResultList()
                 .stream()
-                .filter(e ->
-                        e.getName().equals(entityName) ||
-                                e.getJavaType().getSimpleName().equals(entityName)
-                )
-                .findFirst()
-                // 1. Sprawdzenie czy cała KLASA nie jest wykluczona
-                .filter(e -> !registry.isExcluded(e.getJavaType().getName(), ""))
-                .map(entityType -> {
-                    Class<?> clazz = entityType.getJavaType();
-                    CriteriaBuilder cb = em.getCriteriaBuilder();
-
-                    // Używamy Tuple, aby zachować nazwy kolumn w wyniku
-                    CriteriaQuery<Tuple> query = cb.createTupleQuery();
-                    Root<?> root = query.from(clazz);
-
-                    // 2. Filtrowanie pól przy użyciu Registry
-                    // Używamy getSingularAttributes, aby uniknąć problemów z kolekcjami (@OneToMany) w prostym SELECT
-                    List<Selection<?>> selections = entityType.getSingularAttributes().stream()
-                            .filter(attr -> !registry.isExcluded(clazz.getName(), attr.getName()))
-                            .map(attr -> root.get(attr.getName()).alias(attr.getName()))
-                            .collect(Collectors.toList());
-
-                    // Jeśli wszystkie pola zostały wykluczone, zwracamy pustą listę
-                    if (selections.isEmpty()) {
-                        return Collections.<Object>emptyList();
+                .map(tuple -> {
+                    Map<String, Object> row = new LinkedHashMap<>();
+                    for (jakarta.persistence.TupleElement<?> el : tuple.getElements()) {
+                        row.put(el.getAlias(), tuple.get(el));
                     }
-
-                    query.multiselect(selections);
-
-                    // 3. Pobranie danych i mapowanie Tuple -> Map<String, Object>
-                    return em.createQuery(query)
-                            .getResultList()
-                            .stream()
-                            .map(tuple -> {
-                                Map<String, Object> row = new LinkedHashMap<>();
-                                for (jakarta.persistence.TupleElement<?> el : tuple.getElements()) {
-                                    row.put(el.getAlias(), tuple.get(el));
-                                }
-                                return (Object) row;
-                            })
-                            .collect(Collectors.toList());
+                    return (Object) row;
                 })
-                .orElse(Collections.emptyList());
+                .collect(Collectors.toList());
+    }
+
+    private List<EntityType<?>> getIncludedEntities() {
+        if (!iEm.isResolvable()) return Collections.emptyList();
+        return iEm.get().getMetamodel().getEntities().stream()
+                .filter(e -> registry.isIncluded(e.getJavaType().getName()))
+                .collect(Collectors.toList());
+    }
+
+    private EntityType<?> findIncludedEntity(String entityName) {
+        if (!iEm.isResolvable()) return null;
+        return iEm.get().getMetamodel().getEntities().stream()
+                .filter(e -> (e.getName().equals(entityName) ||
+                        e.getJavaType().getSimpleName().equals(entityName)) &&
+                        registry.isIncluded(e.getJavaType().getName()))
+                .findFirst()
+                .orElse(null);
     }
 }
