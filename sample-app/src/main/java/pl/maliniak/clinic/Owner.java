@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import pl.maliniak.qadmin.runtime.ExcludeQAdmin;
 
 @Entity
 public class Owner extends PanacheEntity {
@@ -12,6 +13,7 @@ public class Owner extends PanacheEntity {
     public String lastName;
     public String address;
     public String city;
+    @ExcludeQAdmin
     public String telephone;
 
     @OneToMany(mappedBy = "owner")

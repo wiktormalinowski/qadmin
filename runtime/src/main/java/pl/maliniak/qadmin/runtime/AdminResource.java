@@ -30,6 +30,9 @@ public class AdminResource {
     ExclusionRegistry registry;
 
     @Inject
+    DisplayRegistry displayRegistry;
+
+    @Inject
     QAdminSupport support;
 
     /**
@@ -52,8 +55,21 @@ public class AdminResource {
     public List<String> getEntityMetadata(@PathParam("entityName") String entityName) {
         EntityType<?> entityType = findIncludedEntity(entityName);
         if (entityType == null) return Collections.emptyList();
+        Class<?> clazz = entityType.getJavaType();
         return entityType.getAttributes().stream()
-                .map(attr -> attr.getName() + " : " + attr.getJavaType().getSimpleName())
+                .map(attr -> {
+                    String meta = attr.getName() + " : " + attr.getJavaType().getSimpleName();
+                    if (attr.isAssociation()) {
+                        String displayField = displayRegistry.getDisplayAttribute(clazz.getName(), attr.getName());
+                        if (displayField == null) {
+                            displayField = displayRegistry.getDisplayAttribute(attr.getJavaType().getName());
+                        }
+                        if (displayField != null) {
+                            meta += " : " + displayField;
+                        }
+                    }
+                    return meta;
+                })
                 .collect(Collectors.toList());
     }
 
