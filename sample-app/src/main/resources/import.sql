@@ -1,0 +1,40 @@
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1001, 'George', 'Franklin', '110 W. Liberty St.', 'Madison', '6085551023');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1002, 'Betty', 'Davis', '638 Cardinal Ave.', 'Sun Prairie', '6085551749');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1003, 'Eduardo', 'Rodriquez', '2693 Commerce St.', 'McFarland', '6085558763');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1004, 'Harold', 'Davis', '563 Friendly St.', 'Windsor', '6085553198');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1005, 'Peter', 'McTavish', '2387 S. Fair Way', 'Madison', '6085552765');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1006, 'Jean', 'Coleman', '105 N. Lake St.', 'Monona', '6085552654');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1007, 'Jeff', 'Black', '1450 Oak Blvd.', 'Monona', '6085555387');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1008, 'Maria', 'Escobito', '345 Maple St.', 'Madison', '6085557683');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1009, 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '6085559435');
+INSERT INTO owner (id, firstname, lastname, address, city, telephone) VALUES (1010, 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '6085555487');
+ALTER SEQUENCE owner_SEQ RESTART WITH 2000;
+
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1001, 'Leo', '2010-09-07', 'Cat', 1001);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1002, 'Basil', '2012-08-06', 'Hamster', 1002);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1003, 'Rosy', '2011-04-17', 'Dog', 1003);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1004, 'Jewel', '2010-03-07', 'Dog', 1003);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1005, 'Iggy', '2010-11-30', 'Lizard', 1004);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1006, 'George', '2010-01-20', 'Snake', 1005);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1007, 'Samantha', '2012-09-04', 'Cat', 1006);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1008, 'Max', '2012-09-04', 'Cat', 1006);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1009, 'Lucky', '2011-08-06', 'Bird', 1007);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1010, 'Mulligan', '2007-02-24', 'Dog', 1008);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1011, 'Freddy', '2010-03-09', 'Bird', 1009);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1012, 'Lucky', '2010-06-24', 'Dog', 1010);
+INSERT INTO pet (id, name, birthdate, type, owner_id) VALUES (1013, 'Sly', '2012-06-08', 'Cat', 1010);
+ALTER SEQUENCE pet_SEQ RESTART WITH 2000;
+
+INSERT INTO vet (id, firstname, lastname, specialty) VALUES (1001, 'James', 'Carter', 'none');
+INSERT INTO vet (id, firstname, lastname, specialty) VALUES (1002, 'Helen', 'Leary', 'radiology');
+INSERT INTO vet (id, firstname, lastname, specialty) VALUES (1003, 'Linda', 'Douglas', 'dentistry');
+INSERT INTO vet (id, firstname, lastname, specialty) VALUES (1004, 'Rafael', 'Ortega', 'surgery');
+INSERT INTO vet (id, firstname, lastname, specialty) VALUES (1005, 'Henry', 'Stevens', 'radiology');
+INSERT INTO vet (id, firstname, lastname, specialty) VALUES (1006, 'Sharon', 'Jenkins', 'none');
+ALTER SEQUENCE vet_SEQ RESTART WITH 2000;
+
+INSERT INTO visit (id, visitdate, description, pet_id, vet_id) VALUES (1001, '2023-01-01', 'Rabies shot', 1007, 1001);
+INSERT INTO visit (id, visitdate, description, pet_id, vet_id) VALUES (1002, '2023-01-02', 'Spayed', 1008, 1002);
+INSERT INTO visit (id, visitdate, description, pet_id, vet_id) VALUES (1003, '2023-01-03', 'Checkup', 1008, 1003);
+INSERT INTO visit (id, visitdate, description, pet_id, vet_id) VALUES (1004, '2023-01-04', 'Broken leg', 1008, 1004);
+ALTER SEQUENCE visit_SEQ RESTART WITH 2000;

@@ -21,6 +21,12 @@
         </processorPath>
         <module name="qadmin" />
       </profile>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="sample-app" />
+      </profile>
       <profile name="Annotation profile for Qadmin - Parent" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -46,6 +52,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="qadmin" options="-parameters" />
       <module name="qadmin-deployment" options="-parameters" />
+      <module name="sample-app" options="-parameters" />
     </option>
   </component>
 </project>

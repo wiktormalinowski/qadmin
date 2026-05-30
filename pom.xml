@@ -10,6 +10,7 @@
     <modules>
         <module>deployment</module>
         <module>runtime</module>
+        <module>sample-app</module>
     </modules>
 
     <properties>
@@ -33,19 +34,16 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>io.quarkiverse.langchain4j</groupId>
                 <artifactId>quarkus-langchain4j-openai</artifactId>
                 <version>${quarkus-langchain4j.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>io.quarkiverse.langchain4j</groupId>
                 <artifactId>quarkus-langchain4j-openai-deployment</artifactId>
                 <version>${quarkus-langchain4j.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
