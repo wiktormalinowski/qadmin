@@ -74,3 +74,22 @@ flowchart LR
     %% Styling for subgraph (make QAdmin distinct)
     style QAdmin_Lib fill:#fff3e0,stroke:#e65100,stroke-width:2px
     style Host_App fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+```
+
+## Development Workflow
+
+For the best developer experience with instant hot-reloads across the entire stack, use two separate terminal windows:
+
+### 1. Backend (Quarkus Dev Mode)
+From the root directory, run:
+```bash
+mvn -pl sample-app quarkus:dev -am
+```
+*Note: Hot-reload for the extension is enabled via the `<quarkus.extension.working-directory>true</quarkus.extension.working-directory>` property in `sample-app/pom.xml`.*
+
+### 2. Frontend (Angular Dev Server)
+From the `webui` directory, run:
+```bash
+npm start
+```
+*This starts the Angular dev server on `http://localhost:4200` with Hot Module Replacement (HMR). API calls to `/q/qadmin/api` are seamlessly proxied to your Quarkus dev server on port `8080`.*
