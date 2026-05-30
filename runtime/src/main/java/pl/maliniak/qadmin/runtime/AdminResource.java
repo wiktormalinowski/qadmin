@@ -9,8 +9,11 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -102,6 +105,51 @@ public class AdminResource {
                     return (Object) row;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @DELETE
+    @Path("/data/{entityName}/{id}")
+    @Transactional
+    public Response deleteData(@PathParam("entityName") String entityName, @PathParam("id") String id) {
+        EntityType<?> entityType = findIncludedEntity(entityName);
+        if (entityType == null) return Response.status(404).build();
+
+        var em = iEm.get();
+        Class<?> clazz = entityType.getJavaType();
+
+        SingularAttribute<?, ?> idAttribute = null;
+        for (SingularAttribute<?, ?> attr : entityType.getSingularAttributes()) {
+            if (attr.isId()) {
+                idAttribute = attr;
+                 break;
+            }
+        }
+
+        if (idAttribute == null) return Response.status(400).entity("Entity has no ID attribute").build();
+
+        Object parsedId;
+        Class<?> idType = idAttribute.getJavaType();
+        try {
+            if (idType.equals(Long.class) || idType.equals(long.class)) {
+                parsedId = Long.parseLong(id);
+            } else if (idType.equals(Integer.class) || idType.equals(int.class)) {
+                parsedId = Integer.parseInt(id);
+            } else if (idType.equals(UUID.class)) {
+                parsedId = UUID.fromString(id);
+            } else {
+                parsedId = id;
+            }
+        } catch (Exception e) {
+            return Response.status(400).entity("Invalid ID format").build();
+        }
+
+        Object entity = em.find(clazz, parsedId);
+        if (entity == null) {
+            return Response.status(404).build();
+        }
+
+        em.remove(entity);
+        return Response.noContent().build();
     }
 
     private List<EntityType<?>> getIncludedEntities() {

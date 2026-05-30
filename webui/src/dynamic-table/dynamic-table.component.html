@@ -10,6 +10,7 @@
         @for (item of firstRow | keyvalue; track item.key) {
           <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-blue-200/70 uppercase tracking-widest border-b border-white/5 bg-slate-900/90 backdrop-blur-sm shadow-[0_1px_0_rgba(255,255,255,0.05)]">{{ item.key }}</th>
         }
+        <th scope="col" class="w-16 px-6 py-4 text-center text-xs font-medium text-red-300/70 uppercase tracking-widest border-b border-l border-white/5 bg-slate-900/90 backdrop-blur-sm shadow-[0_1px_0_rgba(255,255,255,0.05)]">Actions</th>
       </tr>
       </thead>
       <tbody class="divide-y divide-white/5">
@@ -19,6 +20,13 @@
             @for (cell of row | keyvalue; track cell.key) {
               <td class="px-6 py-3 text-slate-400 truncate max-w-xs group-hover:text-slate-200 transition-colors duration-200" [title]="cell.value">{{ cell.value }}</td>
             }
+            <td class="w-16 px-6 py-3 text-center border-l border-white/5">
+              <button (click)="confirmDelete(row)" class="text-red-400/50 hover:text-red-400 hover:bg-red-400/10 p-2 rounded-md transition-colors duration-200" title="Delete">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </td>
           </tr>
         }
       </tbody>
@@ -32,3 +40,72 @@
     </div>
   }
 </div>
+
+@if (showModal) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
+    <div class="bg-slate-900 border border-red-500/30 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+      <div class="p-6">
+        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10 mb-4 mx-auto">
+          <svg class="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-center text-slate-100 mb-2">Confirm Delete</h3>
+        <p class="text-slate-400 text-center mb-6">
+          Are you sure you want to delete <span class="font-bold text-red-400">{{ entityName }}</span> with id <span class="font-bold text-red-400">{{ getRowId(rowToDelete) }}</span>? This action cannot be undone.
+        </p>
+        <div class="flex space-x-3">
+          <button (click)="cancelDelete()" [disabled]="isDeleting" class="flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors duration-200 disabled:opacity-50 font-medium cursor-pointer">Cancel</button>
+          <button (click)="executeDelete()" [disabled]="isDeleting" class="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 font-medium flex justify-center items-center cursor-pointer">
+            @if (isDeleting) {
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Deleting...
+            } @else {
+              Delete
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (toast) {
+  <div class="fixed bottom-6 right-6 z-50 animate-toast-in max-w-sm w-full bg-slate-900/90 backdrop-blur-md border rounded-xl shadow-2xl p-4 flex items-start space-x-3 pointer-events-auto"
+       [class.border-emerald-500/30]="toast.type === 'success'"
+       [class.border-red-500/30]="toast.type === 'error'">
+    <div class="flex-shrink-0">
+      @if (toast.type === 'success') {
+        <div class="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      } @else {
+        <div class="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+      }
+    </div>
+    <div class="flex-1 min-w-0 pt-0.5">
+      <p class="text-sm font-semibold"
+         [class.text-emerald-300]="toast.type === 'success'"
+         [class.text-red-300]="toast.type === 'error'">
+        {{ toast.type === 'success' ? 'Success' : 'Error' }}
+      </p>
+      <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+        {{ toast.message }}
+      </p>
+    </div>
+    <button (click)="toast = null" class="flex-shrink-0 text-slate-500 hover:text-slate-300 transition-colors duration-200 cursor-pointer">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+}

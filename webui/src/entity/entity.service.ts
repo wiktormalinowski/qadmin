@@ -44,4 +44,10 @@ export class EntityService {
       map(res => ({ name, metadata: res.metadata, data: res.data }))
     );
   }
+
+  public deleteEntity(name: string, id: any): Observable<void> {
+    const encodedName = encodeURIComponent(name);
+    const encodedId = encodeURIComponent(String(id));
+    return this.http.delete<void>(`/q/qadmin/api/data/${encodedName}/${encodedId}`);
+  }
 }
