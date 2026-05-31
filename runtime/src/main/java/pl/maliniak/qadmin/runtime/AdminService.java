@@ -18,6 +18,7 @@ import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.transaction.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @ApplicationScoped
@@ -145,7 +146,7 @@ public class AdminService {
         List<Selection<?>> selections = entityType.getSingularAttributes().stream()
                 .filter(attr -> !metadataRegistry.hasMetadata(ExcludeQAdmin.class, clazz.getName(), attr.getName()))
                 .map(attr -> root.get(attr.getName()).alias(attr.getName()))
-                .toList();
+                .collect(Collectors.toList());
 
         if (selections.isEmpty()) return Collections.emptyList();
 
