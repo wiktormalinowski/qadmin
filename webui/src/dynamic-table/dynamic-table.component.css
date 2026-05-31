@@ -1,27 +1,167 @@
-@keyframes slideIn {
-  from {
-    transform: translateY(1rem) scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+.data-table-wrapper {
+  @apply overflow-x-auto max-h-[500px] relative border-t border-white/5;
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+.data-table-wrapper::-webkit-scrollbar {
+  @apply w-2 h-2;
 }
 
-.animate-toast-in {
-  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.data-table-wrapper::-webkit-scrollbar-track {
+  @apply bg-transparent;
 }
 
-.animate-toast-out {
-  animation: fadeOut 0.2s ease-out forwards;
+.data-table-wrapper::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full;
+}
+
+.data-table {
+  @apply min-w-full text-sm whitespace-nowrap;
+}
+
+.data-table__head {
+  @apply sticky top-0 z-10;
+}
+
+.data-table__th-index {
+  @apply w-12 px-6 py-4 text-center text-xs font-medium text-blue-300/70 uppercase tracking-widest border-b border-r border-white/5 bg-slate-900/90 backdrop-blur-sm shadow-[0_1px_0_rgba(255,255,255,0.05)];
+}
+
+.data-table__th-default {
+  @apply px-6 py-4 text-left text-xs font-medium text-blue-200/70 uppercase tracking-widest border-b border-white/5 bg-slate-900/90 backdrop-blur-sm shadow-[0_1px_0_rgba(255,255,255,0.05)];
+}
+
+.data-table__th-actions {
+  @apply w-16 px-6 py-4 text-center text-xs font-medium text-red-300/70 uppercase tracking-widest border-b border-l border-white/5 bg-slate-900/90 backdrop-blur-sm shadow-[0_1px_0_rgba(255,255,255,0.05)];
+}
+
+.data-table__body {
+  @apply divide-y divide-white/5;
+}
+
+.data-table__row {
+  @apply hover:bg-blue-900/10 transition-colors duration-200 cursor-default;
+}
+
+.data-table__td-index {
+  @apply w-12 px-6 py-3 text-center text-blue-300/30 font-medium border-r border-white/5 group-hover:text-blue-300/60 transition-colors duration-200;
+}
+
+.data-table__td-default {
+  @apply px-6 py-3 text-slate-400 truncate max-w-xs group-hover:text-slate-200 transition-colors duration-200;
+}
+
+.data-table__td-actions {
+  @apply w-16 px-6 py-3 text-center border-l border-white/5;
+}
+
+.data-table__btn-delete {
+  @apply text-red-400/50 hover:text-red-400 hover:bg-red-400/10 p-2 rounded-md transition-colors duration-200 cursor-pointer;
+}
+
+.data-table__icon {
+  @apply w-4 h-4;
+}
+
+.no-data {
+  @apply py-12 px-4 text-center text-blue-300/40 italic flex flex-col items-center;
+}
+
+.no-data__icon {
+  @apply h-8 w-8 text-blue-400/20 mb-3;
+}
+
+.no-data__text {
+  @apply font-light tracking-wide text-sm;
+}
+
+.modal {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity;
+}
+
+.modal__card {
+  @apply bg-slate-900 border border-red-500/30 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all;
+}
+
+.modal__content {
+  @apply p-6;
+}
+
+.modal__icon-container {
+  @apply flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10 mb-4 mx-auto;
+}
+
+.modal__icon {
+  @apply w-6 h-6 text-red-500;
+}
+
+.modal__title {
+  @apply text-xl font-semibold text-center text-slate-100 mb-2;
+}
+
+.modal__description {
+  @apply text-slate-400 text-center mb-6;
+}
+
+.modal__highlight-text {
+  @apply font-bold text-red-400;
+}
+
+.modal__actions {
+  @apply flex space-x-3;
+}
+
+.modal__btn-cancel {
+  @apply flex-1 py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors duration-200 disabled:opacity-50 font-medium cursor-pointer;
+}
+
+.modal__btn-delete {
+  @apply flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors duration-200 disabled:opacity-50 font-medium flex justify-center items-center cursor-pointer;
+}
+
+.modal__spinner {
+  @apply animate-spin -ml-1 mr-2 h-4 w-4 text-white;
+}
+
+.toast {
+  @apply fixed bottom-6 right-6 z-50 max-w-sm w-full bg-slate-900/90 backdrop-blur-md border rounded-xl shadow-2xl p-4 flex items-start space-x-3 pointer-events-auto transition-all animate-toast-in;
+}
+
+.toast--success {
+  @apply border-emerald-500/30;
+}
+
+.toast--error {
+  @apply border-red-500/30;
+}
+
+.toast__icon-wrapper {
+  @apply flex-shrink-0;
+}
+
+.toast__icon-bg--success {
+  @apply w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400;
+}
+
+.toast__icon-bg--error {
+  @apply w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400;
+}
+
+.toast__icon {
+  @apply w-5 h-5;
+}
+
+.toast__body {
+  @apply flex-1 min-w-0 pt-0.5;
+}
+
+.toast__title {
+  @apply text-sm font-semibold;
+}
+
+.toast__message {
+  @apply text-xs text-slate-400 mt-1 leading-relaxed;
+}
+
+.toast__close {
+  @apply flex-shrink-0 text-slate-500 hover:text-slate-300 transition-colors duration-200 cursor-pointer;
 }

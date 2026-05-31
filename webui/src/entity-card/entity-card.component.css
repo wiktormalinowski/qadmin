@@ -1,0 +1,39 @@
+.entity-card {
+  @apply bg-slate-900/40 backdrop-blur-sm border border-blue-500/20 rounded-2xl mb-8 shadow-lg hover:border-blue-500/40 hover:bg-slate-900/60 transition-all duration-300 overflow-hidden;
+}
+
+.entity-card__header {
+  @apply py-5 px-6 border-b border-white/5 flex justify-between items-center bg-transparent transition-colors duration-300;
+}
+
+.entity-card__title {
+  @apply m-0 text-xl font-semibold text-slate-200 capitalize tracking-wide;
+}
+
+.entity-card__badge {
+  @apply bg-blue-500/10 text-blue-300 px-3 py-1 rounded-full text-xs font-medium tracking-wide border border-blue-400/20;
+}
+
+.entity-card__metadata-details {
+  @apply bg-transparent border-b border-white/5 text-sm transition-all duration-300;
+}
+
+.entity-card__metadata-summary {
+  @apply py-3 px-6 cursor-pointer text-blue-200/60 font-medium select-none hover:text-blue-200 hover:bg-white/5 transition-all duration-300 flex items-center outline-none;
+}
+
+.entity-card__metadata-icon {
+  @apply w-4 h-4 mr-3 transition-transform duration-300 text-blue-400/50 group-open:rotate-90;
+}
+
+.entity-card__metadata-content {
+  @apply p-0 border-t border-white/5 bg-slate-950/50 backdrop-blur-md;
+}
+
+.entity-card__metadata-json {
+  @apply m-0 p-5 text-blue-100/70 overflow-x-auto text-xs font-mono rounded-none leading-relaxed;
+}
+
+.entity-card__table-container {
+  @apply p-0 bg-transparent;
+}
