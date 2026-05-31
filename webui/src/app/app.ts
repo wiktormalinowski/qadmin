@@ -15,6 +15,5 @@ import {EntityViewModel} from '../entity/entity.model';
 export class App {
   protected service = inject(EntityService);
 
-  readonly vm$ = this.service.entities$;
   protected entityFromPrompt$: Observable<EntityViewModel> | undefined;
 }
