@@ -89,4 +89,12 @@
             </plugins>
         </pluginManagement>
     </build>
+    <profiles>
+        <profile>
+            <id>itTests</id>
+            <modules>
+                <module>integration-tests</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
