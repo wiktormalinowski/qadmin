@@ -37,15 +37,12 @@ export class DynamicTableComponent {
 
   getDisplayValue(key: any, value: any): any {
     if (value && typeof value === 'object') {
-       if (Array.isArray(this.metadata)) {
+       if (this.metadata && typeof this.metadata === 'object' && !Array.isArray(this.metadata)) {
           const keyStr = String(key);
-          const meta = this.metadata.find((m: string) => m.startsWith(keyStr + ' : '));
-          if (meta) {
-             const parts = meta.split(' : ');
-             if (parts.length === 3) {
-                const displayAttr = parts[2].trim();
-                return value[displayAttr] !== undefined ? value[displayAttr] : (value.id || '[object Object]');
-             }
+          const meta = this.metadata[keyStr];
+          if (meta && meta.displayAttribute) {
+              const displayAttr = meta.displayAttribute;
+              return value[displayAttr] !== undefined ? value[displayAttr] : (value.id || '[object Object]');
           }
        }
        return value.id || '[object Object]';

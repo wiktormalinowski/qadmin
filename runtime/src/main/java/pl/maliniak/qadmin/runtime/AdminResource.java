@@ -49,25 +49,28 @@ public class AdminResource {
      */
     @GET
     @Path("/entityMetadata/{entityName}")
-    public List<String> getEntityMetadata(@PathParam("entityName") String entityName) {
+    public Map<String, Object> getEntityMetadata(@PathParam("entityName") String entityName) {
         EntityType<?> entityType = findIncludedEntity(entityName);
-        if (entityType == null) return Collections.emptyList();
+        if (entityType == null) return Collections.emptyMap();
         Class<?> clazz = entityType.getJavaType();
-        return entityType.getAttributes().stream()
-                .map(attr -> {
-                    String meta = attr.getName() + " : " + attr.getJavaType().getSimpleName();
-                    if (attr.isAssociation()) {
-                        String displayField = metadataRegistry.getMetadata(DisplayQAdmin.class, clazz.getName(), attr.getName());
-                        if (displayField == null) {
-                            displayField = metadataRegistry.getMetadata(DisplayQAdmin.class, attr.getJavaType().getName());
-                        }
-                        if (displayField != null) {
-                            meta += " : " + displayField;
-                        }
-                    }
-                    return meta;
-                })
-                .collect(Collectors.toList());
+        
+        Map<String, Object> metadata = new HashMap<>();
+        for (var attr : entityType.getAttributes()) {
+            Map<String, String> fieldMeta = new HashMap<>();
+            fieldMeta.put("javaType", attr.getJavaType().getSimpleName());
+            
+            if (attr.isAssociation()) {
+                String displayField = metadataRegistry.getMetadata(DisplayQAdmin.class, clazz.getName(), attr.getName());
+                if (displayField == null) {
+                    displayField = metadataRegistry.getMetadata(DisplayQAdmin.class, attr.getJavaType().getName());
+                }
+                if (displayField != null) {
+                    fieldMeta.put("displayAttribute", displayField);
+                }
+            }
+            metadata.put(attr.getName(), fieldMeta);
+        }
+        return metadata;
     }
 
     @POST
@@ -75,7 +78,7 @@ public class AdminResource {
     public Map<String, Object> getListWithMetadata(PromptRequest promptRequest) {
         String entityName = support.getEntityName(promptRequest.prompt(), getEntities().toString()).trim();
         List<Object> data = getData(entityName);
-        List<String > metadata = getEntityMetadata(entityName);
+        Map<String, Object> metadata = getEntityMetadata(entityName);
         Map<String, Object> map = new HashMap<>();
         map.put("name", entityName);
         map.put("data", data);
