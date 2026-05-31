@@ -47,7 +47,7 @@
 }
 
 .search-bar__button {
-  @apply ml-2 bg-slate-800 hover:bg-slate-700 text-blue-200 hover:text-white font-medium py-3 px-8 rounded-full transition-colors duration-300 flex-shrink-0 border border-white/5 hover:border-blue-500/30 cursor-pointer;
+  @apply ml-2 bg-slate-800 hover:bg-slate-700 text-blue-200 hover:text-white font-medium py-3 px-8 rounded-full transition-colors duration-300 flex-shrink-0 border border-white/5 hover:border-blue-500/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-800 disabled:hover:text-blue-200 disabled:hover:border-white/5;
 }
 
 .results {

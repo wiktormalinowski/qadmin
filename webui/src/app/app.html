@@ -1,37 +1,39 @@
 <div class="app">
-  
+
   <div class="app__blob app__blob--blue"></div>
   <div class="app__blob app__blob--sky"></div>
 
   <div class="app__main-card">
-    
+
     <header class="app__header">
       <h1 class="app__title">QAdmin AI</h1>
-      <p class="app__subtitle">Fluid insights. Subtle transitions.</p>
+      <p class="app__subtitle">Your intelligent entity manager. CRUD reimagined 😉</p>
     </header>
 
     <div class="search-bar group">
       <div class="search-bar__glow"></div>
       <div class="search-bar__box">
-        <input 
-          #promptInput 
-          type="text" 
-          placeholder="Ask AI for data (e.g., 'show all owners')..." 
+        <input
+          #promptInput
+          type="text"
+          placeholder="Ask me for data (e.g., 'show all users')..."
           class="search-bar__input"
-          (keydown.enter)="entityFromPrompt$ = service.getEntityFromPrompt(promptInput.value)"
+          (input)="null"
+          (keydown.enter)="promptInput.value.trim() && (entityFromPrompt$ = service.getEntityFromPrompt(promptInput.value))"
         />
-        <button 
+        <button
           (click)="entityFromPrompt$ = service.getEntityFromPrompt(promptInput.value)"
+          [disabled]="!promptInput.value.trim()"
           class="search-bar__button"
         >
-          Generate
+          Start searching
         </button>
       </div>
     </div>
 
     <!-- Expanding container -->
-    <div class="results" 
-         [class.results--expanded]="entityFromPrompt$" 
+    <div class="results"
+         [class.results--expanded]="entityFromPrompt$"
          [class.results--collapsed]="!entityFromPrompt$">
       <div class="overflow-hidden">
         <div class="results__wrapper">
@@ -56,7 +58,7 @@
 
     @if (!entityFromPrompt$) {
        <div class="results__empty-state">
-          <p class="results__empty-state-text">Type a prompt to wake the AI.</p>
+          <p class="results__empty-state-text">Ask a question to look for results.</p>
        </div>
     }
 
