@@ -70,16 +70,52 @@
   @apply opacity-100 transition-opacity duration-700 delay-150;
 }
 
-.results__loading {
-  @apply flex items-center justify-center py-16 transition-opacity duration-300;
+.skeleton-card {
+  @apply bg-slate-900/40 backdrop-blur-sm border border-blue-500/20 rounded-2xl shadow-lg overflow-hidden animate-pulse;
 }
 
-.results__spinner {
-  @apply animate-spin -ml-1 mr-3 h-5 w-5 text-blue-400;
+.skeleton-card__header {
+  @apply py-5 px-6 border-b border-white/5 flex justify-between items-center bg-transparent;
 }
 
-.results__loading-text {
-  @apply text-blue-200/70 font-medium tracking-wide;
+.skeleton-card__title {
+  @apply h-6 w-1/4 bg-slate-700/50 rounded;
+}
+
+.skeleton-card__badge {
+  @apply h-6 w-20 bg-blue-500/10 rounded-full;
+}
+
+.skeleton-card__table-container {
+  @apply overflow-x-auto;
+}
+
+.skeleton-table {
+  @apply min-w-full text-sm whitespace-nowrap;
+}
+
+.skeleton-table__head {
+  @apply border-b border-white/5 bg-slate-900/90;
+}
+
+.skeleton-table__th {
+  @apply px-6 py-4 h-4;
+}
+
+.skeleton-table__body {
+  @apply divide-y divide-white/5;
+}
+
+.skeleton-table__row {
+  @apply bg-transparent;
+}
+
+.skeleton-table__td {
+  @apply px-6 py-4;
+}
+
+.skeleton-box {
+  @apply h-4 bg-slate-700/30 rounded;
 }
 
 .results__empty-state {
@@ -88,4 +124,33 @@
 
 .results__empty-state-text {
   @apply text-blue-200/30 text-sm;
+}
+
+/* Loading Message & Transitions */
+.loading-message {
+  @apply relative h-6 overflow-hidden text-center w-64;
+}
+
+.loading-message__primary {
+  @apply absolute inset-x-0 top-0 text-blue-200/70 font-medium tracking-wide;
+  animation: fadeOutMsg 0.5s ease 3s forwards;
+}
+
+.loading-message__secondary {
+  @apply absolute inset-x-0 top-0 text-blue-300/80 font-medium tracking-wide opacity-0;
+  animation: fadeInMsg 0.5s ease 3.5s forwards;
+}
+
+@keyframes fadeOutMsg {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fadeInMsg {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeInMsg 0.5s ease forwards;
 }
