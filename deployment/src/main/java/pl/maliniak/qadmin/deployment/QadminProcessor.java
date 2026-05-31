@@ -8,11 +8,16 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.DotName;
 import pl.maliniak.qadmin.runtime.AdminResource;
+import pl.maliniak.qadmin.runtime.AdminService;
 import pl.maliniak.qadmin.runtime.QAdminMeta;
 import pl.maliniak.qadmin.runtime.QAdminMetadataRecorder;
 import pl.maliniak.qadmin.runtime.QAdminMetadataRegistry;
+import pl.maliniak.qadmin.runtime.QAdminSupport;
+import pl.maliniak.qadmin.runtime.QAdminWarmup;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +33,13 @@ class QadminProcessor {
     
     @BuildStep
     void registerResource(BuildProducer<AdditionalBeanBuildItem> additionalBeans) {
-        additionalBeans.produce(AdditionalBeanBuildItem.unremovableOf(AdminResource.class));
+        additionalBeans.produce(AdditionalBeanBuildItem.builder()
+                .addBeanClass(AdminResource.class)
+                .addBeanClass(AdminService.class)
+                .addBeanClass(QAdminWarmup.class)
+                .addBeanClass(QAdminSupport.class)
+                .setUnremovable()
+                .build());
     }
 
     @BuildStep
@@ -57,10 +68,10 @@ class QadminProcessor {
                     value = valueAttr.asString();
                 }
 
-                if (target.kind() == org.jboss.jandex.AnnotationTarget.Kind.CLASS) {
+                if (target.kind() == AnnotationTarget.Kind.CLASS) {
                     specificMetadata.put(target.asClass().name().toString(), value);
                 }
-                else if (target.kind() == org.jboss.jandex.AnnotationTarget.Kind.FIELD) {
+                else if (target.kind() == AnnotationTarget.Kind.FIELD) {
                     var field = target.asField();
                     specificMetadata.put(field.declaringClass().name() + "." + field.name(), value);
                 }
@@ -69,7 +80,7 @@ class QadminProcessor {
         }
 
         return SyntheticBeanBuildItem.configure(QAdminMetadataRegistry.class)
-                .scope(jakarta.enterprise.context.ApplicationScoped.class)
+                .scope(ApplicationScoped.class)
                 .runtimeValue(recorder.createRegistry(metadata))
                 .done();
     }

@@ -9,12 +9,16 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.SingularAttribute;
 import jakarta.transaction.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @ApplicationScoped
 public class AdminService {
@@ -32,16 +36,20 @@ public class AdminService {
         if (!iEm.isResolvable()) return Collections.emptyList();
         return getIncludedEntities().stream()
                 .map(EntityType::getName)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Map<String, Object> getEntityView(String entityName) {
+        return getEntityView(entityName, null);
+    }
+
+    public Map<String, Object> getEntityView(String entityName, AiQueryResponse criteria) {
         EntityType<?> entityType = findIncludedEntity(entityName);
         if (entityType == null) {
             return null;
         }
         Map<String, Object> metadata = getEntityMetadata(entityName);
-        List<Object> data = getData(entityName);
+        List<Object> data = getData(entityName, criteria);
         
         Map<String, Object> map = new HashMap<>();
         map.put("name", entityName);
@@ -52,7 +60,24 @@ public class AdminService {
 
     public Map<String, Object> queryAi(PromptRequest promptRequest) {
         String entityName = support.getEntityName(promptRequest.prompt(), getEntityNames().toString()).trim();
-        return getEntityView(entityName);
+        EntityType<?> entityType = findIncludedEntity(entityName);
+        if (entityType == null) {
+            return null;
+        }
+
+        String columns = entityType.getSingularAttributes().stream()
+                .map(attr -> attr.getName() + " (" + attr.getJavaType().getSimpleName() + ")")
+                .collect(Collectors.joining(", "));
+
+        AiQueryResponse criteria = null;
+        try {
+            criteria = support.getFiltersAndOrders(promptRequest.prompt(), columns);
+        } catch (Exception e) {
+            // ignore or log
+            e.printStackTrace();
+        }
+
+        return getEntityView(entityName, criteria);
     }
 
     @Transactional
@@ -63,28 +88,14 @@ public class AdminService {
         var em = iEm.get();
         Class<?> clazz = entityType.getJavaType();
 
-        SingularAttribute<?, ?> idAttribute = null;
-        for (SingularAttribute<?, ?> attr : entityType.getSingularAttributes()) {
-            if (attr.isId()) {
-                idAttribute = attr;
-                 break;
-            }
-        }
-
-        if (idAttribute == null) throw new IllegalArgumentException("Entity has no ID attribute");
+        SingularAttribute<?, ?> idAttribute = entityType.getSingularAttributes().stream()
+                .filter(SingularAttribute::isId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Entity has no ID attribute"));
 
         Object parsedId;
-        Class<?> idType = idAttribute.getJavaType();
         try {
-            if (idType.equals(Long.class) || idType.equals(long.class)) {
-                parsedId = Long.parseLong(id);
-            } else if (idType.equals(Integer.class) || idType.equals(int.class)) {
-                parsedId = Integer.parseInt(id);
-            } else if (idType.equals(UUID.class)) {
-                parsedId = UUID.fromString(id);
-            } else {
-                parsedId = id;
-            }
+            parsedId = parseValue(id, idAttribute.getJavaType());
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid ID format");
         }
@@ -122,7 +133,7 @@ public class AdminService {
         return metadata;
     }
 
-    private List<Object> getData(String entityName) {
+    private List<Object> getData(String entityName, AiQueryResponse criteria) {
         EntityType<?> entityType = findIncludedEntity(entityName);
         if (entityType == null) return Collections.emptyList();
         var em = iEm.get();
@@ -134,11 +145,67 @@ public class AdminService {
         List<Selection<?>> selections = entityType.getSingularAttributes().stream()
                 .filter(attr -> !metadataRegistry.hasMetadata(ExcludeQAdmin.class, clazz.getName(), attr.getName()))
                 .map(attr -> root.get(attr.getName()).alias(attr.getName()))
-                .collect(Collectors.toList());
+                .toList();
 
         if (selections.isEmpty()) return Collections.emptyList();
 
         query.multiselect(selections);
+
+        if (criteria != null) {
+            // Apply Filters
+            if (criteria.filters() != null && !criteria.filters().isEmpty()) {
+                List<Predicate> predicates = new ArrayList<>();
+                for (AiQueryResponse.Filter filter : criteria.filters()) {
+                    try {
+                        Path<Object> path = root.get(filter.column());
+                        Class<?> javaType = path.getJavaType();
+                        Object value = parseValue(filter.value(), javaType);
+                        
+                        switch (filter.operator()) {
+                            case EQUALS -> predicates.add(cb.equal(path, value));
+                            case NOT_EQUALS -> predicates.add(cb.notEqual(path, value));
+                            case GREATER_THAN -> {
+                                if (Comparable.class.isAssignableFrom(javaType)) {
+                                    Expression<Comparable> compPath = (Expression<Comparable>) (Object) path;
+                                    predicates.add(cb.greaterThan(compPath, (Comparable) value));
+                                }
+                            }
+                            case LESS_THAN -> {
+                                if (Comparable.class.isAssignableFrom(javaType)) {
+                                    Expression<Comparable> compPath = (Expression<Comparable>) (Object) path;
+                                    predicates.add(cb.lessThan(compPath, (Comparable) value));
+                                }
+                            }
+                            case LIKE -> predicates.add(cb.like(cb.lower(path.as(String.class)), "%" + String.valueOf(value).toLowerCase() + "%"));
+                        }
+                    } catch (Exception e) {
+                        // ignore invalid filters
+                    }
+                }
+                if (!predicates.isEmpty()) {
+                    query.where(cb.and(predicates.toArray(new Predicate[0])));
+                }
+            }
+
+            // Apply Orders
+            if (criteria.orders() != null && !criteria.orders().isEmpty()) {
+                List<Order> jpaOrders = new ArrayList<>();
+                for (AiQueryResponse.Order order : criteria.orders()) {
+                    try {
+                        if (AiQueryResponse.Direction.DESC.equals(order.direction())) {
+                            jpaOrders.add(cb.desc(root.get(order.column())));
+                        } else {
+                            jpaOrders.add(cb.asc(root.get(order.column())));
+                        }
+                    } catch (Exception e) {
+                        // ignore invalid orders
+                    }
+                }
+                if (!jpaOrders.isEmpty()) {
+                    query.orderBy(jpaOrders);
+                }
+            }
+        }
 
         return em.createQuery(query)
                 .getResultList()
@@ -150,14 +217,14 @@ public class AdminService {
                     }
                     return (Object) row;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<EntityType<?>> getIncludedEntities() {
         if (!iEm.isResolvable()) return Collections.emptyList();
         return iEm.get().getMetamodel().getEntities().stream()
                 .filter(e -> !metadataRegistry.hasMetadata(ExcludeQAdmin.class, e.getJavaType().getName()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private EntityType<?> findIncludedEntity(String entityName) {
@@ -168,5 +235,18 @@ public class AdminService {
                         !metadataRegistry.hasMetadata(ExcludeQAdmin.class, e.getJavaType().getName()))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private Object parseValue(String value, Class<?> type) {
+        if (value == null) return null;
+        return switch (type.getSimpleName()) {
+            case "String" -> value;
+            case "Integer", "int" -> Integer.parseInt(value);
+            case "Long", "long" -> Long.parseLong(value);
+            case "Boolean", "boolean" -> Boolean.parseBoolean(value);
+            case "Double", "double" -> Double.parseDouble(value);
+            case "UUID" -> UUID.fromString(value);
+            default -> value;
+        };
     }
 }

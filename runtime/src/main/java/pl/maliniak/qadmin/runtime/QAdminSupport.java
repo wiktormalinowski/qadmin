@@ -61,4 +61,15 @@ public interface QAdminSupport {
             """)
     String getEntityName(@UserMessage String question, String entities);
 
+    @SystemMessage("""
+            Extract filtering and ordering requirements from the user's question.
+            Available columns with their java types: {columns}
+            If no filters or orders, leave arrays empty.
+            CRITICAL: All ENUM values (operator and direction) MUST be STRICTLY UPPERCASE (e.g. EQUALS, GREATER_THAN, ASC, DESC).
+            CRITICAL: All values MUST be represented as STRINGS, even numbers and booleans (e.g. "true" instead of true, "100" instead of 100).
+            MUST RETURN A VALID JSON OBJECT EXACTLY LIKE THIS EXAMPLE:
+            {"filters": [{"column": "name", "operator": "EQUALS", "value": "abc"}], "orders": [{"column": "name", "direction": "ASC"}]}
+            """)
+    AiQueryResponse getFiltersAndOrders(@UserMessage String question, String columns);
+
 }

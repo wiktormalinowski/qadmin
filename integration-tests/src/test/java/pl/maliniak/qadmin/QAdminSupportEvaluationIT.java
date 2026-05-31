@@ -7,13 +7,10 @@ import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import pl.maliniak.qadmin.runtime.QAdminSupport;
 
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @QuarkusTest
-public class QAdminSupportEvaluationIT {
+public class QAdminSupportEvaluationIT extends AbstractEvaluationIT {
 
     @Inject
     QAdminSupport qAdminSupport;
@@ -35,44 +32,11 @@ public class QAdminSupportEvaluationIT {
                 "Show me places", "Place"
         );
 
-        System.out.println("==================================================");
-        System.out.println("Starting AI Model Precision & Speed Evaluation");
-        System.out.println("==================================================");
-
-        int passed = 0;
-        int total = samples.size();
-        long totalExecutionTime = 0;
-
-        for (Map.Entry<String, String> entry : samples.entrySet()) {
-            String input = entry.getKey();
-            String expected = entry.getValue();
-
-            long startTime = System.currentTimeMillis();
-            
-            // Invoke the AI Service
-            String actual = qAdminSupport.getEntityName(input, availableEntities);
-            
-            long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
-            totalExecutionTime += duration;
-
-            boolean isCorrect = expected.equalsIgnoreCase(actual != null ? actual.trim() : "");
-            if (isCorrect) {
-                passed++;
-            }
-
-            System.out.printf("Input: '%s'\n", input);
-            System.out.printf("Expected: '%s' | Actual: '%s'\n", expected, actual);
-            System.out.printf("Result: %s | Time: %d ms\n", isCorrect ? "PASS" : "FAIL", duration);
-            System.out.println("--------------------------------------------------");
-        }
-
-        double precision = ((double) passed / total) * 100;
-        double averageSpeed = (double) totalExecutionTime / total;
-
-        System.out.printf("EVALUATION COMPLETE\n");
-        System.out.printf("Precision Score: %.2f%%\n", precision);
-        System.out.printf("Average Latency: %.2f ms per request\n", averageSpeed);
-        System.out.println("==================================================");
+        evaluateModel(
+            "Entity Name Extraction", 
+            samples, 
+            input -> qAdminSupport.getEntityName(input, availableEntities), 
+            (expected, actual) -> expected.equalsIgnoreCase(actual != null ? actual.trim() : "")
+        );
     }
 }
