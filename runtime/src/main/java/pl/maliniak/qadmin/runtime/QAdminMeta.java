@@ -5,9 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Meta-annotation used to mark annotations that should be automatically
+ * scanned and added to the QAdminMetadataRegistry.
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.TYPE})
-@QAdminMeta
-public @interface DisplayQAdmin {
-    String value();
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface QAdminMeta {
 }

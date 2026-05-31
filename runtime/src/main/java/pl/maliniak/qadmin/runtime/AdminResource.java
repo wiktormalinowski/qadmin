@@ -27,10 +27,7 @@ public class AdminResource {
     Instance<EntityManager> iEm;
 
     @Inject
-    ExclusionRegistry registry;
-
-    @Inject
-    DisplayRegistry displayRegistry;
+    QAdminMetadataRegistry metadataRegistry;
 
     @Inject
     QAdminSupport support;
@@ -60,9 +57,9 @@ public class AdminResource {
                 .map(attr -> {
                     String meta = attr.getName() + " : " + attr.getJavaType().getSimpleName();
                     if (attr.isAssociation()) {
-                        String displayField = displayRegistry.getDisplayAttribute(clazz.getName(), attr.getName());
+                        String displayField = metadataRegistry.getMetadata(DisplayQAdmin.class, clazz.getName(), attr.getName());
                         if (displayField == null) {
-                            displayField = displayRegistry.getDisplayAttribute(attr.getJavaType().getName());
+                            displayField = metadataRegistry.getMetadata(DisplayQAdmin.class, attr.getJavaType().getName());
                         }
                         if (displayField != null) {
                             meta += " : " + displayField;
@@ -102,7 +99,7 @@ public class AdminResource {
         Root<?> root = query.from(clazz);
 
         List<Selection<?>> selections = entityType.getSingularAttributes().stream()
-                .filter(attr -> registry.isIncluded(clazz.getName(), attr.getName()))
+                .filter(attr -> !metadataRegistry.hasMetadata(ExcludeQAdmin.class, clazz.getName(), attr.getName()))
                 .map(attr -> root.get(attr.getName()).alias(attr.getName()))
                 .collect(Collectors.toList());
 
@@ -171,7 +168,7 @@ public class AdminResource {
     private List<EntityType<?>> getIncludedEntities() {
         if (!iEm.isResolvable()) return Collections.emptyList();
         return iEm.get().getMetamodel().getEntities().stream()
-                .filter(e -> registry.isIncluded(e.getJavaType().getName()))
+                .filter(e -> !metadataRegistry.hasMetadata(ExcludeQAdmin.class, e.getJavaType().getName()))
                 .collect(Collectors.toList());
     }
 
@@ -180,7 +177,7 @@ public class AdminResource {
         return iEm.get().getMetamodel().getEntities().stream()
                 .filter(e -> (e.getName().equals(entityName) ||
                         e.getJavaType().getSimpleName().equals(entityName)) &&
-                        registry.isIncluded(e.getJavaType().getName()))
+                        !metadataRegistry.hasMetadata(ExcludeQAdmin.class, e.getJavaType().getName()))
                 .findFirst()
                 .orElse(null);
     }
